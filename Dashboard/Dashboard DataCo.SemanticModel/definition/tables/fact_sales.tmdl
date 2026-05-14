@@ -1,0 +1,213 @@
+table fact_sales
+	lineageTag: f9df7c08-7772-479f-a102-f1cdf827916e
+
+	column 'Order Item ID'
+		dataType: string
+		lineageTag: 1f79a5a6-0f61-4979-901d-3c054202eddb
+		summarizeBy: none
+		sourceColumn: Order Item ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: c7abdc38-9933-463d-b989-39cd89d85092
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product ID'
+		dataType: string
+		lineageTag: f19b6fc3-c79e-49fc-9936-3f3bab65e382
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order ID'
+		dataType: string
+		lineageTag: 16476980-b878-4358-80ef-ed76a503200d
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Price'
+		dataType: double
+		lineageTag: 96c1c527-ca9e-44ea-a348-e1d5809dbbe0
+		summarizeBy: sum
+		sourceColumn: Product Price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 0adca085-893e-4679-a05f-56e3dfa9b9fe
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Gross Sales'
+		dataType: double
+		lineageTag: 6f0a47f0-3c7a-4ff5-8897-49be357b68ab
+		summarizeBy: sum
+		sourceColumn: Gross Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Discount
+		dataType: double
+		lineageTag: ab814d2f-6578-49b9-9fa6-eb932fe08f8b
+		summarizeBy: sum
+		sourceColumn: Discount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Discount Rate'
+		dataType: double
+		lineageTag: e22477ee-74a5-4b56-ba8b-5c39c14cd380
+		summarizeBy: sum
+		sourceColumn: Discount Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Net Sales'
+		dataType: double
+		lineageTag: aba38477-dc1b-4bf8-a170-1422d7655674
+		summarizeBy: sum
+		sourceColumn: Net Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Profit
+		dataType: double
+		lineageTag: 19aba4dd-4eec-40a2-aa64-3c4f9d6c1d94
+		summarizeBy: sum
+		sourceColumn: Profit
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Profit Rate'
+		dataType: double
+		lineageTag: 5055942a-5734-4c59-ba78-c4ab9139006b
+		summarizeBy: sum
+		sourceColumn: Profit Rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Order Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 65663fb3-20f3-4808-84ef-9256b09d2151
+		summarizeBy: none
+		sourceColumn: Order Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Shipping Date'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 346d56be-aa26-41e3-8e5d-161b1d29e5fc
+		summarizeBy: none
+		sourceColumn: Shipping Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Actual Shipping Days'
+		dataType: int64
+		formatString: 0
+		lineageTag: ae831671-f3f9-4070-9d3a-2a05c41bf4a5
+		summarizeBy: sum
+		sourceColumn: Actual Shipping Days
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Scheduled Shipping Days'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4f356657-44f1-4a6c-9557-fef58693ab4f
+		summarizeBy: sum
+		sourceColumn: Scheduled Shipping Days
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Delivery Status'
+		dataType: string
+		lineageTag: 422f8d4f-a700-4299-b700-6d5020cbdc85
+		summarizeBy: none
+		sourceColumn: Delivery Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Shipping Mode'
+		dataType: string
+		lineageTag: 4a05d6ad-61c7-4b78-be8e-b1efef4c7d4f
+		summarizeBy: none
+		sourceColumn: Shipping Mode
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Status'
+		dataType: string
+		lineageTag: 0a7a3b48-fbfc-438d-8b75-7859f869b497
+		summarizeBy: none
+		sourceColumn: Order Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Payment Type'
+		dataType: string
+		lineageTag: 88f2f206-ef37-46c1-9f72-26c11a470342
+		summarizeBy: none
+		sourceColumn: Payment Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Late or Canceled or On Time' = SWITCH(fact_sales[Delivery Status],"Late Delivery", "Late Delivery","Advance Shipping","Shipping On Time","Shipping On Time","Shipping On Time","Canceled")
+		lineageTag: 76567bb6-6657-48df-9a8e-8c6c8ce417e6
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_sales = m
+		mode: import
+		queryGroup: 'dim & fact'
+		source =
+				let
+				    Source = DataCoTransMain,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Payment Type", "Days for shipping (real)", "Days for shipment (scheduled)", "Benefit per order", "Sales per customer", "Delivery Status", "Order Customer Id", "Order Date", "Order Id", "Order Item Discount", "Order Item Discount Rate", "Order Item Id", "Order Item Product Price", "Order Item Profit Ratio", "Order Item Quantity", "Sales", "Order Item Total", "Order Profit Per Order", "Order Status", "Product Card Id", "Shipping Date", "Shipping Mode"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"Order Customer Id", "Customer Id"}, {"Product Card Id", "Product ID"}}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Renamed Columns",{"Order Item Id", "Customer Id", "Product ID", "Order Id", "Days for shipping (real)", "Days for shipment (scheduled)", "Sales per customer", "Benefit per order", "Order Date", "Order Item Discount", "Order Item Discount Rate", "Order Item Product Price", "Order Item Profit Ratio", "Order Item Quantity", "Sales", "Order Item Total", "Order Profit Per Order", "Order Status", "Shipping Date", "Shipping Mode", "Payment Type"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Reordered Columns",{"Order Item Total", "Order Profit Per Order"}),
+				    #"Reordered Columns1" = Table.ReorderColumns(#"Removed Columns",{"Order Item Id", "Customer Id", "Product ID", "Order Id", "Order Item Product Price", "Order Item Quantity", "Sales", "Order Item Discount", "Order Item Discount Rate", "Sales per customer", "Benefit per order", "Order Item Profit Ratio", "Order Date", "Shipping Date", "Days for shipping (real)", "Days for shipment (scheduled)", "Delivery Status", "Shipping Mode", "Order Status", "Payment Type"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Reordered Columns1",{{"Delivery Status", type text}}),
+				    #"Capitalized Delivery Status" = Table.TransformColumns(#"Changed Type",{{"Delivery Status", Text.Proper, type text}}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Capitalized Delivery Status",{{"Order Item Id", "Order Item ID"}, {"Customer Id", "Customer ID"}, {"Order Id", "Order ID"}, {"Order Item Product Price", "Product Price"}, {"Order Item Quantity", "Quantity"}, {"Sales", "Gross Sales"}, {"Order Item Discount", "Discount"}, {"Order Item Discount Rate", "Discount Rate"}, {"Sales per customer", "Net Sales"}, {"Benefit per order", "Profit"}, {"Order Item Profit Ratio", "Profit Rate"}, {"Days for shipping (real)", "Actual Shipping Days"}, {"Days for shipment (scheduled)", "Scheduled Shipping Days"}})
+				in
+				    #"Renamed Columns1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

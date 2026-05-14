@@ -1,0 +1,216 @@
+table measure_table
+	lineageTag: 13475f46-6f26-4a45-ae2e-e5bcc099cc19
+
+	measure 'Total Confirmed Revenue' =
+			CALCULATE(
+			    SUM(fact_sales[Net Sales]),
+			    ALL(fact_sales[Order Status]),
+			    fact_sales[Order Status] IN {"Complete","Closed"}
+			)
+		lineageTag: 70fe5350-a304-46f1-bd75-2b02810c7f5c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Expected Revenue' = SUM(fact_sales[Net Sales])
+		lineageTag: e0f5ba8e-808a-4437-8bc0-f33c286501bd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Confirmed Profit' = ```
+			CALCULATE(
+			    SUM(fact_sales[Profit]),
+			    ALL(fact_sales[Order Status]),
+			    fact_sales[Order Status] IN {"Complete","Closed"}
+			)
+			
+			```
+		lineageTag: d31acf1f-167b-4b3f-bbec-9b4dcb059bf5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Profit Margin' = DIVIDE([Total Confirmed Profit],[Total Confirmed Revenue],0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 83e917f7-898b-4d0d-995a-2eae6648971b
+
+	measure 'Delivery Success Rate' =
+			
+			VAR Success_Order = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID]),
+			    ALL(fact_sales[Late or Canceled or On Time]),
+			    fact_sales[Late or Canceled or On Time] <> "Canceled"
+			)
+			VAR Total_Order = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID]),
+			    ALL(fact_sales[Late or Canceled or On Time])
+			)
+			RETURN
+			DIVIDE(Success_Order,Total_Order,0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 68a23c98-8486-4a5f-a18f-743ad844453a
+
+	measure 'Total Orders' =
+			CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID])
+			)
+		formatString: 0
+		lineageTag: 2ca98dda-2ae3-4100-b154-a42afa168a9c
+
+	measure 'Avg. Value Per Order' = DIVIDE([Total Confirmed Revenue],[Total Confirmed Order],0)
+		lineageTag: caa6a0f2-9f42-4b5d-b826-f99b66c028b0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rolling Avg Revenue 3 Months' = ```
+			
+			VAR LastDateSelected = MAX('Dim_Date'[Date])
+			VAR Period = 
+			    DATESINPERIOD(
+			        'Dim_Date'[Date], 
+			        LastDateSelected, 
+			        -3, 
+			        MONTH
+			    )
+			RETURN
+			    AVERAGEX(
+			        Period,
+			        [Total Confirmed Revenue]
+			    )
+			```
+		lineageTag: a8bd5f67-cf0f-4554-9214-58f7bab5cbfa
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rolling Avg Profit 3 Months' = ```
+			
+			VAR LastDateSelected = MAX('Dim_Date'[Date])
+			VAR Period = 
+			    DATESINPERIOD(
+			        'Dim_Date'[Date], 
+			        LastDateSelected, 
+			        -3, 
+			        MONTH
+			    )
+			RETURN
+			    AVERAGEX(
+			        Period,
+			        [Total Confirmed Profit]
+			    )
+			```
+		lineageTag: 6ed709ff-39aa-4017-83c9-dede7b475ae4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'YTD Profit' =
+			TOTALYTD(
+			    [Total Confirmed Revenue],
+			    dim_date[Date]
+			)
+		lineageTag: 4b5289b7-7c58-4597-b376-802253b6504e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Order Success Rate' =
+			
+			VAR Order_Success = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order Id]),
+			    ALL(fact_sales[Order Status]),
+			    fact_sales[Order Status] IN {"Complete","Closed"}
+			)
+			
+			VAR Total_Order_Delivery = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order Id]),
+			    ALL(fact_sales[Order Status])
+			)
+			
+			RETURN
+			DIVIDE(Order_Success,Total_Order_Delivery,0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: bd1c38e2-3556-468c-8b96-93022b3404ca
+
+	measure 'Delivery On Time Rate' =
+			
+			VAR Success_Order = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID]),
+			    ALL(fact_sales[Late or Canceled or On Time]),
+			    fact_sales[Late or Canceled or On Time] = "Shipping On Time"
+			)
+			VAR Total_Order = CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID]),
+			    ALL(fact_sales[Late or Canceled or On Time])
+			)
+			RETURN
+			DIVIDE(Success_Order,Total_Order,0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 06c308a5-9784-4576-8314-200322c55b16
+
+	measure 'Avg. Lead Time' =
+			CALCULATE(
+			    AVERAGE(fact_sales[Actual Shipping Days])
+			)
+		lineageTag: 2d0c92c0-67de-4930-b7c4-eabf882cb918
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Order Delivery Success' = ```
+			CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID])
+			)
+			
+			```
+		formatString: 0
+		lineageTag: cf004578-c77c-4e97-a3f1-3a7a6affb29f
+
+	measure 'Avg. Order Per Customer' = DIVIDE([Total Confirmed Order],[Total Confirmed Customer],0)
+		lineageTag: f37ccf40-1e49-432e-a02c-be87c29bd8f3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Confirmed Customer' =
+			CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Customer ID]),
+			    ALL(fact_sales[Order Status]),
+			    fact_sales[Order Status] in {"Complete","Closed"}
+			)
+		formatString: 0
+		lineageTag: ca93865a-9b90-4f03-b191-c196b4d0096e
+
+	measure 'Avg. Value Per Customer' = DIVIDE([Total Confirmed Revenue],[Total Confirmed Customer],0)
+		lineageTag: 6739602e-68a3-47f0-b75b-848fb7427902
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Confirmed Order' = ```
+			CALCULATE(
+			    DISTINCTCOUNT(fact_sales[Order ID]),
+			    ALL(fact_sales[Order Status]),
+			    fact_sales[Order Status] IN {"Complete","Closed"}
+			)
+			
+			```
+		formatString: 0
+		lineageTag: e1076e76-b6a8-4eca-8412-6b8e26734f6d
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Average Discount Rate' = AVERAGE(fact_sales[Discount Rate])
+		lineageTag: 3ab3d327-0783-4054-9002-3dcc5f5a8e57
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Column
+		formatString: 0
+		lineageTag: 061aa520-b85a-420e-8b8e-7c3a844adb60
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition measure_table = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = d0b57cbe73d240b183a4607f76ceeae4
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

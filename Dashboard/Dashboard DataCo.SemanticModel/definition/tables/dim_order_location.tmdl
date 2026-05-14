@@ -1,0 +1,67 @@
+table dim_order_location
+	lineageTag: dc59351e-6665-4372-b488-c3d29ca3309a
+
+	column 'Order Id'
+		dataType: string
+		lineageTag: c83a2302-ee57-4213-b71e-d1e81b8d4025
+		summarizeBy: none
+		sourceColumn: Order Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Market
+		dataType: string
+		lineageTag: bf6769a9-7874-4683-9886-3219f7081edb
+		summarizeBy: none
+		sourceColumn: Market
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Region'
+		dataType: string
+		lineageTag: 7a2f55e0-ef70-41a2-9ee1-0bc891f2e822
+		summarizeBy: none
+		sourceColumn: Order Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Country'
+		dataType: string
+		lineageTag: 33680b8a-437c-402a-9f03-938127e597f5
+		summarizeBy: none
+		sourceColumn: Order Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order State'
+		dataType: string
+		lineageTag: a1ccc4bc-be2d-46ec-ae38-d00b03f8dbcd
+		summarizeBy: none
+		sourceColumn: Order State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order City'
+		dataType: string
+		lineageTag: c9cdb940-5752-41f3-9c02-308a7220ece9
+		summarizeBy: none
+		sourceColumn: Order City
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_order_location = m
+		mode: import
+		queryGroup: 'dim & fact'
+		source =
+				let
+				    Source = DataCoTransMain,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Market", "Order City", "Order Id", "Order Region", "Order Country", "Order State"}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Removed Other Columns",{"Order Id", "Market", "Order Region", "Order Country", "Order State", "Order City"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Reordered Columns")
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

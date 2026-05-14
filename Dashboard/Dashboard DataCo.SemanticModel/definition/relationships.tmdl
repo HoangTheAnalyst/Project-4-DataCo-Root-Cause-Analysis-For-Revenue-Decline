@@ -1,0 +1,21 @@
+relationship AutoDetected_a188e2e6-705a-4fbc-b89f-1551a1a48d93
+	fromColumn: fact_sales.'Customer ID'
+	toColumn: dim_customer.'Customer Id'
+
+relationship AutoDetected_43136b1a-79a3-4efa-a57f-a90ff71cb386
+	fromColumn: fact_sales.'Order ID'
+	toColumn: dim_order_location.'Order Id'
+
+relationship fee9bf90-56bd-1b07-6915-19973c2673fd
+	fromColumn: fact_sales.'Product ID'
+	toColumn: dim_product.'Product Card Id'
+
+relationship aeac3d2c-f0ac-fa14-85eb-fb566a86c60d
+	fromColumn: fact_sales.'Order Date'
+	toColumn: dim_date.Date
+
+relationship 588a1adb-ef35-9545-fdf0-ed255d530a8a
+	isActive: false
+	fromColumn: fact_sales.'Shipping Date'
+	toColumn: dim_date.Date
+

@@ -1,0 +1,83 @@
+expression DataCoTransRoot =
+		let
+		    Source = Csv.Document(File.Contents("E:\DA\DA\PBI4 - Sales & Inventory\Dataset\DataCoSupplyChainDataset.csv"),[Delimiter=",", Columns=53, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Type", type text}, {"Days for shipping (real)", Int64.Type}, {"Days for shipment (scheduled)", Int64.Type}, {"Benefit per order", type number}, {"Sales per customer", type number}, {"Delivery Status", type text}, {"Late_delivery_risk", Int64.Type}, {"Category Id", Int64.Type}, {"Category Name", type text}, {"Customer City", type text}, {"Customer Country", type text}, {"Customer Email", type text}, {"Customer Fname", type text}, {"Customer Id", Int64.Type}, {"Customer Lname", type text}, {"Customer Password", type text}, {"Customer Segment", type text}, {"Customer State", type text}, {"Customer Street", type text}, {"Customer Zipcode", Int64.Type}, {"Department Id", Int64.Type}, {"Department Name", type text}, {"Latitude", type number}, {"Longitude", type number}, {"Market", type text}, {"Order City", type text}, {"Order Country", type text}, {"Order Customer Id", Int64.Type}, {"order date (DateOrders)", type datetime}, {"Order Id", Int64.Type}, {"Order Item Cardprod Id", Int64.Type}, {"Order Item Discount", type number}, {"Order Item Discount Rate", type number}, {"Order Item Id", Int64.Type}, {"Order Item Product Price", type number}, {"Order Item Profit Ratio", type number}, {"Order Item Quantity", Int64.Type}, {"Sales", type number}, {"Order Item Total", type number}, {"Order Profit Per Order", type number}, {"Order Region", type text}, {"Order State", type text}, {"Order Status", type text}, {"Order Zipcode", Int64.Type}, {"Product Card Id", Int64.Type}, {"Product Category Id", Int64.Type}, {"Product Description", type text}, {"Product Image", type text}, {"Product Name", type text}, {"Product Price", type number}, {"Product Status", Int64.Type}, {"shipping date (DateOrders)", type datetime}, {"Shipping Mode", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 69aa8833-d676-4af0-9879-67085c4adbcc
+	queryGroup: root
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression DataCoTransMain = ```
+		let
+		    Source = DataCoTransRoot,
+		    #"Renamed Columns" = Table.RenameColumns(Source,{{"Type", "Payment Type"}}),
+		    #"Capitalized Payment Type" = Table.TransformColumns(#"Renamed Columns",{{"Payment Type", Text.Proper, type text}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Capitalized Payment Type", each true),
+		    #"New Delivery Status : Days for shipping = days for shipment = 0 -> Immediate" = Table.AddColumn(#"Filtered Rows", "Custom", each if [#"Days for shipping (real)"] = 0 and [#"Days for shipment (scheduled)"] = 0 
+		then "Immediate" 
+		else [Delivery Status]),
+		    #"Reordered Columns" = Table.ReorderColumns(#"New Delivery Status : Days for shipping = days for shipment = 0 -> Immediate",{"Payment Type", "Days for shipping (real)", "Days for shipment (scheduled)", "Benefit per order", "Sales per customer", "Custom", "Delivery Status", "Late_delivery_risk", "Category Id", "Category Name", "Customer City", "Customer Country", "Customer Email", "Customer Fname", "Customer Id", "Customer Lname", "Customer Password", "Customer Segment", "Customer State", "Customer Street", "Customer Zipcode", "Department Id", "Department Name", "Latitude", "Longitude", "Market", "Order City", "Order Country", "Order Customer Id", "order date (DateOrders)", "Order Id", "Order Item Cardprod Id", "Order Item Discount", "Order Item Discount Rate", "Order Item Id", "Order Item Product Price", "Order Item Profit Ratio", "Order Item Quantity", "Sales", "Order Item Total", "Order Profit Per Order", "Order Region", "Order State", "Order Status", "Order Zipcode", "Product Card Id", "Product Category Id", "Product Description", "Product Image", "Product Name", "Product Price", "Product Status", "shipping date (DateOrders)", "Shipping Mode"}),
+		    #"Removed Old Delivery Status" = Table.RemoveColumns(#"Reordered Columns",{"Delivery Status"}),
+		    #"Renamed Columns1" = Table.RenameColumns(#"Removed Old Delivery Status",{{"Custom", "Delivery Status"}}),
+		    #"Remove Delivery Risk Columns, Department, Category, Product Image & Product Description Columns" = Table.RemoveColumns(#"Renamed Columns1",{"Late_delivery_risk", "Category Id", "Category Name", "Department Id", "Department Name", "Product Category Id", "Product Description", "Product Image"}),
+		    #"Capitalized Product Name" = Table.TransformColumns(#"Remove Delivery Risk Columns, Department, Category, Product Image & Product Description Columns",{{"Product Name", Text.Proper, type text}}),
+		    #"Added New Category Column" = Table.AddColumn(#"Capitalized Product Name", "Custom", each let
+		    name = Text.Lower([Product Name]), 
+		    category = 
+		        if Text.Contains(name, "golf") or Text.Contains(name, "putter") or Text.Contains(name, "titleist") or Text.Contains(name, "bridgestone") or Text.Contains(name, "taylormade") then "Golf & Equipment"
+		        else if Text.Contains(name, "shoe") or Text.Contains(name, "cleat") or Text.Contains(name, "slide") or Text.Contains(name, "sock") then "Footwear"
+		        else if Text.Contains(name, "nike") or Text.Contains(name, "adidas") or Text.Contains(name, "under armour") or Text.Contains(name, "shirt") or Text.Contains(name, "shorts") or Text.Contains(name, "dress") then "Apparel"
+		        else if Text.Contains(name, "watch") or Text.Contains(name, "gps") or Text.Contains(name, "polar") or Text.Contains(name, "garmin") or Text.Contains(name, "fitbit") or Text.Contains(name, "gopro") or Text.Contains(name, "camera") or Text.Contains(name, "laptop") then "Electronics & Gadgets"
+		        else if Text.Contains(name, "elliptical") or Text.Contains(name, "gym") or Text.Contains(name, "dumbbells") or Text.Contains(name, "bike") or Text.Contains(name, "training mask") or Text.Contains(name, "fit") then "Fitness & Training"
+		        else if Text.Contains(name, "kayak") or Text.Contains(name, "backpack") or Text.Contains(name, "hammock") or Text.Contains(name, "tent") then "Outdoor & Adventure"
+		        else "General Merchandise" 
+		in
+		    category),
+		    #"Renamed Columns2" = Table.RenameColumns(#"Added New Category Column",{{"Custom", "Product Category"}}),
+		    #"Remove Customer Password & Customer Email" = Table.RemoveColumns(#"Renamed Columns2",{"Customer Email", "Customer Password"}),
+		    #"Remove Customer With State Error & null in Customer ZipCode" = Table.SelectRows(#"Remove Customer Password & Customer Email", each ([Customer City] <> "CA")),
+		    #"Changed Customer Zipcode to Text" = Table.TransformColumnTypes(#"Remove Customer With State Error & null in Customer ZipCode",{{"Customer Zipcode", type text}}),
+		    #"Standardized Customer Zipcode to 5 digits" = Table.AddColumn(#"Changed Customer Zipcode to Text", "Custom", each Text.PadStart([Customer Zipcode], 5, "0")),
+		    #"Remove Old Customer Zipcode" = Table.RemoveColumns(#"Standardized Customer Zipcode to 5 digits",{"Customer Zipcode"}),
+		    #"Renamed Columns4" = Table.RenameColumns(#"Remove Old Customer Zipcode",{{"Custom", "Customer Zipcode"}}),
+		    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns4", {"Order Country"}, #"Country Translation", {"Country(Spanish)"}, "Table", JoinKind.LeftOuter),
+		    #"Using Country in English" = Table.ExpandTableColumn(#"Merged Queries", "Table", {"Country(English)"}, {"Table.Country(English)"}),
+		    #"Removed Order Country ( Spanish )" = Table.RemoveColumns(#"Using Country in English",{"Order Country"}),
+		    #"Renamed Columns3" = Table.RenameColumns(#"Removed Order Country ( Spanish )",{{"Table.Country(English)", "Order Country"}}),
+		    #"Reordered Columns1" = Table.ReorderColumns(#"Renamed Columns3",{"Payment Type", "Days for shipping (real)", "Days for shipment (scheduled)", "Benefit per order", "Sales per customer", "Delivery Status", "Customer City", "Customer Country", "Customer Fname", "Customer Id", "Customer Lname", "Customer Segment", "Customer State", "Customer Street", "Customer Zipcode", "Latitude", "Longitude", "Market", "Order City", "Order Customer Id", "order date (DateOrders)", "Order Id", "Order Item Cardprod Id", "Order Item Discount", "Order Item Discount Rate", "Order Item Id", "Order Item Product Price", "Order Item Profit Ratio", "Order Item Quantity", "Sales", "Order Item Total", "Order Profit Per Order", "Order Region", "Order Country", "Order State", "Order Status", "Order Zipcode", "Product Card Id", "Product Name", "Product Price", "Product Status", "shipping date (DateOrders)", "Shipping Mode", "Product Category"}),
+		    #"Capitalized Order Status" = Table.TransformColumns(#"Reordered Columns1",{{"Order Status", Text.Proper, type text}}),
+		    #"Removed ""_"" in Order Status" = Table.ReplaceValue(#"Capitalized Order Status","_"," ",Replacer.ReplaceText,{"Order Status"}),
+		    #"Removed Order Zipcode" = Table.RemoveColumns(#"Removed ""_"" in Order Status",{"Order Zipcode"}),
+		    #"Changed Shipping & Order Date from Date/Time to Date" = Table.TransformColumnTypes(#"Removed Order Zipcode",{{"order date (DateOrders)", type date}, {"shipping date (DateOrders)", type date}}),
+		    #"Renamed Shipping & Order Date Columns" = Table.RenameColumns(#"Changed Shipping & Order Date from Date/Time to Date",{{"order date (DateOrders)", "Order Date"}, {"shipping date (DateOrders)", "Shipping Date"}}),
+		    #"Changed Key ID to Text" = Table.TransformColumnTypes(#"Renamed Shipping & Order Date Columns",{{"Customer Id", type text}, {"Order Customer Id", type text}, {"Order Id", type text}, {"Order Item Cardprod Id", type text}, {"Order Item Id", type text}, {"Product Card Id", type text}}),
+		    #"Rounded Order Items Number & Sales Number to 2 Decimal Places" = Table.TransformColumns(#"Changed Key ID to Text",{{"Benefit per order", each Number.Round(_, 2), type number}, {"Sales per customer", each Number.Round(_, 2), type number}, {"Order Item Discount", each Number.Round(_, 2), type number}, {"Order Item Discount Rate", each Number.Round(_, 2), type number}, {"Order Item Product Price", each Number.Round(_, 2), type number}, {"Order Item Profit Ratio", each Number.Round(_, 2), type number}, {"Sales", each Number.Round(_, 2), type number}, {"Order Item Total", each Number.Round(_, 2), type number}, {"Order Profit Per Order", each Number.Round(_, 2), type number}, {"Product Price", each Number.Round(_, 2), type number}}),
+		    #"Removed Product Status" = Table.RemoveColumns(#"Rounded Order Items Number & Sales Number to 2 Decimal Places",{"Product Status"})
+		in
+		    #"Removed Product Status"
+		```
+	lineageTag: a8ab610c-60fe-4bd8-815d-3514d360e7f1
+	queryGroup: main
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'Country Translation' =
+		let
+		    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("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", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t, Column2 = _t]),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Column1", "Country(Spanish)"}, {"Column2", "Country(English)"}})
+		in
+		    #"Renamed Columns"
+	lineageTag: 4513a815-3144-4335-8ecb-1c82df00c780
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

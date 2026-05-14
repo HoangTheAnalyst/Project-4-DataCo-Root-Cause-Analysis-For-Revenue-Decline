@@ -1,0 +1,111 @@
+table dim_customer
+	lineageTag: 688a2000-9de2-470b-9884-664b1f4e106b
+
+	column 'Customer Id'
+		dataType: string
+		lineageTag: ac675a71-e2ae-43a9-91b5-9402fc12bf91
+		summarizeBy: none
+		sourceColumn: Customer Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Fname'
+		dataType: string
+		lineageTag: 4340db2b-5a7e-4798-95aa-111664b351b3
+		summarizeBy: none
+		sourceColumn: Customer Fname
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Lname'
+		dataType: string
+		lineageTag: ed47dcdc-bbb7-42c1-99a1-8d6801873cb4
+		summarizeBy: none
+		sourceColumn: Customer Lname
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Segment'
+		dataType: string
+		lineageTag: a75b4803-b57c-4427-ab6f-a75184534a8f
+		summarizeBy: none
+		sourceColumn: Customer Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Zipcode'
+		dataType: string
+		lineageTag: 6893da73-e239-487d-9260-2e85d8d2e622
+		summarizeBy: none
+		sourceColumn: Customer Zipcode
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Country'
+		dataType: string
+		lineageTag: 06aee135-9f9f-4f80-b7f0-a8ba8a089a68
+		summarizeBy: none
+		sourceColumn: Customer Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer State'
+		dataType: string
+		lineageTag: dc818aa0-e651-4fbb-9539-eca6f4a05f16
+		summarizeBy: none
+		sourceColumn: Customer State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer City'
+		dataType: string
+		lineageTag: cf8fd69f-b2e1-41e4-a56c-2997e0c50188
+		summarizeBy: none
+		sourceColumn: Customer City
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Street'
+		dataType: string
+		lineageTag: e34f822b-00e4-41ed-bc9f-78249ba9f6ca
+		summarizeBy: none
+		sourceColumn: Customer Street
+
+		annotation SummarizationSetBy = Automatic
+
+	column Latitude
+		dataType: double
+		lineageTag: bf08aea1-2d7d-40a5-9180-0d94b9d76d08
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Longitude
+		dataType: double
+		lineageTag: 466e1c16-59cb-453b-a51c-58072ab9072b
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition dim_customer = m
+		mode: import
+		queryGroup: 'dim & fact'
+		source =
+				let
+				    Source = DataCoTransMain,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"Customer City", "Customer Country", "Customer Fname", "Customer Id", "Customer Lname", "Customer Segment", "Customer State", "Customer Street", "Customer Zipcode", "Latitude", "Longitude"}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Removed Other Columns",{"Customer Id", "Customer Fname", "Customer Lname", "Customer Segment", "Customer Zipcode", "Customer Country", "Customer State", "Customer City", "Customer Street", "Latitude", "Longitude"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Reordered Columns")
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

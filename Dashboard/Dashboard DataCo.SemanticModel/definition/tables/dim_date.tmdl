@@ -1,0 +1,159 @@
+table dim_date
+	lineageTag: 500aa13f-74bb-4161-9fe3-9af9ffae433e
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: General Date
+		lineageTag: d5f086eb-3481-4226-bc01-ef082affe2ab
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateAsInteger
+		lineageTag: 1e0f1e62-616d-471d-9365-aec693597f27
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DateAsInteger]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 69c137bd-588e-47c3-ac38-98ac160acb76
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNumber
+		formatString: 0
+		lineageTag: 3320fcdd-a96f-4887-83c1-29918f1e14c6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		lineageTag: b9714de2-88c1-4bff-a666-36da56707bd2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthName]
+		sortByColumn: MonthNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthShort
+		lineageTag: 1bf5928e-58a6-433d-9019-40dd04dc8183
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthShort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterNumber
+		formatString: 0
+		lineageTag: 70d48e8a-b759-4d76-bacc-f9fa119ba889
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [QuarterNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		lineageTag: d203a19a-fa4b-441e-8469-f76ad56fed7a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearQuarter
+		lineageTag: 9987e292-0f9b-480e-80fb-b31129740202
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [YearQuarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekNumber
+		formatString: 0
+		lineageTag: 5d272510-6b62-46e8-853a-85836f775077
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [WeekNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekNumber
+		formatString: 0
+		lineageTag: 2cf321db-08f2-4ed5-a56f-3cf4dba959c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DayOfWeekNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeek
+		lineageTag: e8660419-bb1f-46d8-8aca-9ed6a8845a4d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DayOfWeek]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekShort
+		lineageTag: f119638e-42f0-4db8-b5ec-4840f2798fef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DayOfWeekShort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthYearNumber
+		lineageTag: f8f4cfef-9629-4d30-bd41-4a60cf8da7da
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthYearNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthYear
+		lineageTag: 4003466c-1a79-4756-a415-656e9a6f3951
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthYear]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = calculated
+		mode: import
+		source =
+				
+				VAR StartDate = DATE(2015, 1, 1)
+				VAR EndDate = DATE(2018, 2, 28)
+				RETURN
+				ADDCOLUMNS(
+				    CALENDAR(StartDate, EndDate),
+				    "DateAsInteger", FORMAT ( [Date], "YYYYMMDD" ),
+				    "Year", YEAR ( [Date] ),
+				    "MonthNumber", MONTH ( [Date] ),
+				    "MonthName", FORMAT ( [Date], "MMMM" ),
+				    "MonthShort", FORMAT ( [Date], "MMM" ),
+				    "QuarterNumber", QUARTER ( [Date] ),
+				    "Quarter", "Q" & FORMAT ( [Date], "Q" ),
+				    "YearQuarter", FORMAT ( [Date], "YYYY" ) & "/Q" & FORMAT ( [Date], "Q" ),
+				    "WeekNumber", WEEKNUM ( [Date] ),
+				    "DayOfWeekNumber", WEEKDAY ( [Date] ),
+				    "DayOfWeek", FORMAT ( [Date], "dddd" ),
+				    "DayOfWeekShort", FORMAT ( [Date], "ddd" ),
+				    "MonthYearNumber", FORMAT ( [Date], "YYYYMM" ),
+				    "MonthYear", FORMAT ( [Date], "mmm YYYY" )
+				)
+
+	annotation PBI_Id = 8c9e223207a24011b41d03d424872f7b
+
