@@ -1,0 +1,67 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "bf509ec05e00ce690100",
+  "displayName": "Logistics",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'template_cream_overview.png'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "template_cream_overview858896519835289.png"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fill'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "13d169e8a880287c4c08",
+      "target": "fa0b180d6ad00397bd0c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "13d169e8a880287c4c08",
+      "target": "d498024d03223615ec99",
+      "type": "DataFilter"
+    },
+    {
+      "source": "13d169e8a880287c4c08",
+      "target": "9cb3ef858ccb665db472",
+      "type": "DataFilter"
+    }
+  ]
+}
